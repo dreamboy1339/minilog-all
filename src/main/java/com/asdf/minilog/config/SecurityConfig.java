@@ -93,6 +93,9 @@ public class SecurityConfig {
                     // 사용자 조회(GET /api/v2/user/{userId})는 인증 없이 접근 허용
                     .requestMatchers(HttpMethod.GET, "/api/v2/user/{userId}")
                     .permitAll()
+                    // Devices, Tasks API는 인증 없이 접근 허용 (요구사항에 인증 명시 없음)
+                    .requestMatchers("/api/v2/devices/**", "/api/v2/tasks/**")
+                    .permitAll()
                     // 사용자 삭제는 어드민 권한이 필요하도록 조치.
                     // 사용자 삭제(DELETE /api/v2/user/{userId})는 ROLE_ADMIN 권한을 가진 사용자만 접근 가능
                     .requestMatchers(HttpMethod.DELETE, "/api/v2/user/{userId}")

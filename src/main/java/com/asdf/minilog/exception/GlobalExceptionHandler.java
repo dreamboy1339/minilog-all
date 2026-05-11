@@ -38,6 +38,28 @@ public class GlobalExceptionHandler {
 
   @ApiResponses(
       value = {
+        @ApiResponse(responseCode = "404", description = "Device not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  @ExceptionHandler(DeviceNotFoundException.class)
+  public ResponseEntity<String> handleDeviceNotFoundException(DeviceNotFoundException exception) {
+    return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+  }
+
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "404", description = "Task not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  @ExceptionHandler(TaskNotFoundException.class)
+  public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException exception) {
+    return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+  }
+
+  @ApiResponses(
+      value = {
         @ApiResponse(responseCode = "400", description = "Bad request"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
       })
