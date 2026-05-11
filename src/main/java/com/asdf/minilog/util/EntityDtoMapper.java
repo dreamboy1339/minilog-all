@@ -1,11 +1,20 @@
 package com.asdf.minilog.util;
 
 import com.asdf.minilog.dto.ArticleResponseDto;
+import com.asdf.minilog.dto.DeviceResponseDto;
+import com.asdf.minilog.dto.DeviceSummaryDto;
+import com.asdf.minilog.dto.DeviceWithTasksResponseDto;
 import com.asdf.minilog.dto.FollowResponseDto;
+import com.asdf.minilog.dto.TaskResponseDto;
+import com.asdf.minilog.dto.TaskSummaryDto;
+import com.asdf.minilog.dto.TaskWithDeviceResponseDto;
 import com.asdf.minilog.dto.UserResponseDto;
 import com.asdf.minilog.entity.Article;
+import com.asdf.minilog.entity.Device;
 import com.asdf.minilog.entity.Follow;
+import com.asdf.minilog.entity.Task;
 import com.asdf.minilog.entity.User;
+import java.util.List;
 
 public class EntityDtoMapper {
 
@@ -34,6 +43,65 @@ public class EntityDtoMapper {
     return Follow.builder()
         .follower(User.builder().id(followerId).build())
         .followee(User.builder().id(followeeId).build())
+        .build();
+  }
+
+  public static DeviceResponseDto toDto(Device device) {
+    return DeviceResponseDto.builder()
+        .id(device.getId())
+        .name(device.getName())
+        .type(device.getType())
+        .createdAt(device.getCreatedAt())
+        .updatedAt(device.getUpdatedAt())
+        .build();
+  }
+
+  public static DeviceSummaryDto toSummaryDto(Device device) {
+    return DeviceSummaryDto.builder()
+        .id(device.getId())
+        .name(device.getName())
+        .type(device.getType())
+        .build();
+  }
+
+  public static TaskResponseDto toDto(Task task) {
+    return TaskResponseDto.builder()
+        .id(task.getId())
+        .deviceId(task.getDevice().getId())
+        .name(task.getName())
+        .description(task.getDescription())
+        .createdAt(task.getCreatedAt())
+        .updatedAt(task.getUpdatedAt())
+        .build();
+  }
+
+  public static TaskSummaryDto toSummaryDto(Task task) {
+    return TaskSummaryDto.builder()
+        .id(task.getId())
+        .name(task.getName())
+        .description(task.getDescription())
+        .build();
+  }
+
+  public static DeviceWithTasksResponseDto toWithTasksDto(Device device, List<Task> tasks) {
+    return DeviceWithTasksResponseDto.builder()
+        .id(device.getId())
+        .name(device.getName())
+        .type(device.getType())
+        .createdAt(device.getCreatedAt())
+        .updatedAt(device.getUpdatedAt())
+        .tasks(tasks.stream().map(EntityDtoMapper::toSummaryDto).toList())
+        .build();
+  }
+
+  public static TaskWithDeviceResponseDto toWithDeviceDto(Task task) {
+    return TaskWithDeviceResponseDto.builder()
+        .id(task.getId())
+        .name(task.getName())
+        .description(task.getDescription())
+        .createdAt(task.getCreatedAt())
+        .updatedAt(task.getUpdatedAt())
+        .device(toSummaryDto(task.getDevice()))
         .build();
   }
 }
