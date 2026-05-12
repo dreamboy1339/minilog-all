@@ -1,15 +1,28 @@
 # 요구사항
 
-- 디비에 2개의 테이블이 있다. 각각 Devices, Tasks 테이블이 있다.
-- Devices 테이블은 id, name, type, created_at, updated_at 컬럼을 가지고 있다.
-- Tasks 테이블은 id, device_id, name, description, created_at, updated_at 컬럼을 가지고 있다.
-- Tasks 테이블의 device_id는 Devices 테이블의 id와 매핑된다.
-- Tasks 테이블의 name은 255자 이하의 문자열이다.
-- Tasks 테이블의 description은 1000자 이하의 문자열이다.
-- DeviceController, DeviceService, DeviceRepository 를 생성하고, Rest api에 맞게 구현한다.
-- TaskController, TaskService, TaskRepository 를 생성하고, Rest api에 맞게 구현한다.
-- DeviceController에는 기본적인 CRUD api를 구현한다.
-- TaskController에는 기본적인 CRUD api를 구현한다.
-- DeviceController에는 Device 목록과 Task 목록이 결합된 api를 구현한다. 이름은 getDevicesWithTasks 이다. 이것은 Paging이 가능한 api이다.
-- TaskController에는 Task 목록이 결합된 api를 구현한다. 이름은 getTasksWithDevice 이다. 이것은 Paging이 가능한 api이다.
-- 테스트 코드를 작성한다.
+- 태스크는 시작, 진행 중, 완료 상태를 가진다.
+- 태스크가 완료된 후 작업 보고서를 작성한다.
+- 보고서 작성 후 검토 및 결재 단계를 거쳐 보고서를 완료한다.
+- 보고 단계는 보고서 작성 -> 상신 -> 검토 -> 결재 단계로 구성된다.
+- 검토는 검토자가 검토한다.
+- 결재는 결재자가 검토한다.
+- 검토자는 보고서를 '검토 반려' 할 수 있다.
+- 결재자는 '결재 반려' 할 수 있다.
+- 상신할 때는 보고서 작성자가 상신한다.
+- 보고서 작성자는 보고서를 '작성 취소' 할 수 있다.
+- 상신할 때 검토자와 결재라를 선택할 수 있다.
+- 검토자와 결재자를 생성, 추가, 수정, 삭제할 수 있다.
+- 보고서 최종 단계는 '승인 완료' 이다.
+- 보고서는 '작성', '작성 취소', '상신', '검토', '결재', '승인 완료' 단계를 가진다.
+- 보고서는 '작성 취소' 시 '작성' 단계로 돌아간다.
+- 보고서는 '상신' 시 '상신' 단계로 이동한다.
+- 보고서는 '검토 반려' 시 '상신' 단계로 돌아간다.
+- 보고서는 '결재 반려' 시 '검토' 단계로 돌아간다.
+- 보고서는 '승인 완료' 시 '승인 완료' 단계로 이동한다.
+- 보고서는 삭제할 수 있다.
+- 보고서는 보고서 작성자가 삭제할 수 있다.
+- 보고서는 보고서 작성자가 '작성 취소' 시 삭제할 수 있다.
+- 보고서는 보고서 작성자가 '상신' 시 삭제할 수 없다.
+- 보고서는 보고서 작성자가 '검토' 단계에서 삭제할 수 없다.
+- 보고서는 보고서 작성자가 '결재' 단계에서 삭제할 수 없다.
+- 모든 보고서 목록을 조회할 수 있다.
