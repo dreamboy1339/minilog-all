@@ -1,5 +1,6 @@
 package com.asdf.minilog.dto;
 
+import com.asdf.minilog.entity.TaskStatus;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,8 @@ public class TaskResponseDto {
   @NonNull private String name;
 
   private String description;
+
+  @NonNull private TaskStatus status;
 
   @NonNull private LocalDateTime createdAt;
 

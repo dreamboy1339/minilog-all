@@ -36,6 +36,13 @@ public class UserService {
   }
 
   @Transactional(readOnly = true)
+  public List<UserResponseDto> getUsersByRole(Role role) {
+    return userRepository.findAllByRole(role).stream()
+        .map(EntityDtoMapper::toDto)
+        .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
   public Optional<UserResponseDto> getUserById(Long id) {
     return userRepository.findById(id).map(EntityDtoMapper::toDto);
   }
@@ -66,6 +73,58 @@ public class UserService {
     return EntityDtoMapper.toDto(savedUser);
   }
 
+  public UserResponseDto createUserWithRole(UserRequestDto userRequestDto, Role role) {
+    if (userRepository.findByUserName(userRequestDto.getUsername()).isPresent()) {
+      throw new IllegalArgumentException("User already exists");
+    }
+
+    HashSet<Role> roles = new HashSet<>();
+    roles.add(Role.ROLE_AUTHOR);
+    roles.add(role);
+
+    User user =
+        User.builder()
+            .userName(userRequestDto.getUsername())
+            .password(userRequestDto.getPassword())
+            .roles(roles)
+            .build();
+
+    return EntityDtoMapper.toDto(userRepository.save(user));
+  }
+
+  public UserResponseDto addRole(Long userId, Role role) {
+    User user = findUserOrThrow(userId);
+    HashSet<Role> roles = new HashSet<>();
+    if (user.getRoles() != null) {
+      roles.addAll(user.getRoles());
+    }
+    roles.add(role);
+    user.setRoles(roles);
+    return EntityDtoMapper.toDto(userRepository.save(user));
+  }
+
+  public UserResponseDto updateUserWithRole(Long userId, UserRequestDto userRequestDto, Role role) {
+    User user = findUserOrThrow(userId);
+    if (user.getRoles() == null || !user.getRoles().contains(role)) {
+      throw new IllegalArgumentException("User does not have required role");
+    }
+
+    user.setUserName(userRequestDto.getUsername());
+    user.setPassword(userRequestDto.getPassword());
+    return EntityDtoMapper.toDto(userRepository.save(user));
+  }
+
+  public void removeRole(Long userId, Role role) {
+    User user = findUserOrThrow(userId);
+    if (user.getRoles() == null || !user.getRoles().contains(role)) {
+      throw new IllegalArgumentException("User does not have required role");
+    }
+    HashSet<Role> roles = new HashSet<>(user.getRoles());
+    roles.remove(role);
+    user.setRoles(roles);
+    userRepository.save(user);
+  }
+
   public UserResponseDto updateUser(
       MinilogUserDetails userDetails, Long userId, UserRequestDto userRequestDto) {
     var isUserMatchedAdmin =
@@ -75,14 +134,7 @@ public class UserService {
       throw new NotAuthorizedException("You are not authorized to update this user");
     }
 
-    User user =
-        userRepository
-            .findById(userId)
-            .orElseThrow(
-                () -> {
-                  String message = String.format("User with id %d not found", userId);
-                  return new UserNotFoundException(message);
-                });
+    User user = findUserOrThrow(userId);
     user.setUserName(userRequestDto.getUsername());
     user.setPassword(userRequestDto.getPassword());
 
@@ -102,14 +154,17 @@ public class UserService {
   }
 
   public void deleteUser(Long userId) {
-    User user =
-        userRepository
-            .findById(userId)
-            .orElseThrow(
-                () -> {
-                  String message = String.format("User with id %d not found", userId);
-                  return new UserNotFoundException(message);
-                });
+    User user = findUserOrThrow(userId);
     userRepository.deleteById(user.getId());
+  }
+
+  private User findUserOrThrow(Long userId) {
+    return userRepository
+        .findById(userId)
+        .orElseThrow(
+            () -> {
+              String message = String.format("User with id %d not found", userId);
+              return new UserNotFoundException(message);
+            });
   }
 }

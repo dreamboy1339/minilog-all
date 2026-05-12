@@ -13,6 +13,7 @@ import com.asdf.minilog.dto.TaskResponseDto;
 import com.asdf.minilog.dto.TaskWithDeviceResponseDto;
 import com.asdf.minilog.entity.Device;
 import com.asdf.minilog.entity.Task;
+import com.asdf.minilog.entity.TaskStatus;
 import com.asdf.minilog.exception.DeviceNotFoundException;
 import com.asdf.minilog.exception.TaskNotFoundException;
 import com.asdf.minilog.repository.DeviceRepository;
@@ -88,6 +89,7 @@ class TaskServiceTest {
     assertThat(result.getId()).isEqualTo(10L);
     assertThat(result.getDeviceId()).isEqualTo(1L);
     assertThat(result.getName()).isEqualTo("t10");
+    assertThat(result.getStatus()).isEqualTo(TaskStatus.STARTED);
   }
 
   @Test
@@ -130,7 +132,28 @@ class TaskServiceTest {
 
     assertThat(result.getName()).isEqualTo("updated");
     assertThat(result.getDescription()).isEqualTo("d2");
+    assertThat(result.getStatus()).isEqualTo(TaskStatus.STARTED);
     verify(deviceRepository, never()).findById(anyLong());
+  }
+
+  @Test
+  void updateTask_changesStatus() {
+    Device d = device(1L);
+    Task t = task(10L, d);
+    when(taskRepository.findById(10L)).thenReturn(Optional.of(t));
+    when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
+
+    TaskResponseDto result =
+        taskService.updateTask(
+            10L,
+            TaskRequestDto.builder()
+                .deviceId(1L)
+                .name("updated")
+                .description("d2")
+                .status(TaskStatus.COMPLETED)
+                .build());
+
+    assertThat(result.getStatus()).isEqualTo(TaskStatus.COMPLETED);
   }
 
   @Test

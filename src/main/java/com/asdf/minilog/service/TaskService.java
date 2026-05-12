@@ -5,6 +5,7 @@ import com.asdf.minilog.dto.TaskResponseDto;
 import com.asdf.minilog.dto.TaskWithDeviceResponseDto;
 import com.asdf.minilog.entity.Device;
 import com.asdf.minilog.entity.Task;
+import com.asdf.minilog.entity.TaskStatus;
 import com.asdf.minilog.exception.DeviceNotFoundException;
 import com.asdf.minilog.exception.TaskNotFoundException;
 import com.asdf.minilog.repository.DeviceRepository;
@@ -38,6 +39,7 @@ public class TaskService {
             .device(device)
             .name(request.getName())
             .description(request.getDescription())
+            .status(request.getStatus() == null ? TaskStatus.STARTED : request.getStatus())
             .build();
     Task saved = taskRepository.save(task);
     return EntityDtoMapper.toDto(saved);
@@ -51,6 +53,9 @@ public class TaskService {
     }
     task.setName(request.getName());
     task.setDescription(request.getDescription());
+    if (request.getStatus() != null) {
+      task.setStatus(request.getStatus());
+    }
     Task updated = taskRepository.save(task);
     return EntityDtoMapper.toDto(updated);
   }
