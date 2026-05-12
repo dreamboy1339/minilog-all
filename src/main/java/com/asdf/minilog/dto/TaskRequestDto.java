@@ -1,5 +1,6 @@
 package com.asdf.minilog.dto;
 
+import com.asdf.minilog.entity.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,4 +23,6 @@ public class TaskRequestDto {
 
   @Size(max = 1000)
   private String description;
+
+  private TaskStatus status;
 }

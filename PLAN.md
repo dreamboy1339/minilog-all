@@ -1,172 +1,57 @@
-# PLAN — Devices / Tasks REST API with Paging
+# 작업 보고서 승인 흐름 구현 계획
 
-## 1. 목표
-`REQUIREMENT.md` 기준으로 `Devices`, `Tasks` 두 테이블에 대한 CRUD REST API와, 두 도메인을 결합한 Paging 가능한 조회 API 2종을 구현한다. 기존 `Article` / `User` 도메인의 레이어드 아키텍처(Controller → Service → Repository, JPA + Hibernate Auditing, Lombok, springdoc OpenAPI, `@WebMvcTest` 기반 컨트롤러 테스트)를 그대로 따른다.
+## Summary
 
-## 2. 산출물 개요
-- 엔티티: `Device`, `Task`
-- DTO: 요청/응답 DTO + `DeviceWithTasksResponseDto`, `TaskWithDeviceResponseDto`
-- 레이어: `DeviceRepository`, `DeviceService`, `DeviceController`, `TaskRepository`, `TaskService`, `TaskController`
-- 예외: `DeviceNotFoundException`, `TaskNotFoundException` + `GlobalExceptionHandler` 핸들러 추가
-- 매퍼: `EntityDtoMapper`에 변환 메서드 확장
-- 테스트: 컨트롤러 단위 테스트 2종 (`DeviceControllerTest`, `TaskControllerTest`) + 서비스 단위 테스트 2종
+- `Task`에 상태를 추가한다: `STARTED`, `IN_PROGRESS`, `COMPLETED`.
+- 완료된 태스크(`COMPLETED`)에 대해서만 작업 보고서를 작성할 수 있게 한다.
+- 검토자/결재자는 별도 테이블이 아니라 기존 `User`의 역할로 관리한다: `ROLE_REVIEWER`, `ROLE_APPROVER`.
+- 보고서 상태는 `DRAFT`, `SUBMITTED`, `REVIEW`, `APPROVAL`, `APPROVED`로 관리하고, `작성 취소`는 별도 저장 상태가 아니라 `DRAFT`로 되돌리는 액션으로 처리한다.
 
-## 3. 엔티티 설계
+## Key Changes
 
-### 3.1 `Device` (`devices` 테이블)
-| 컬럼 | 타입 | 제약 |
-|---|---|---|
-| `id` | `Long` | PK, auto-increment |
-| `name` | `String` | not null |
-| `type` | `String` | not null |
-| `created_at` | `LocalDateTime` | `@CreatedDate`, not null, updatable=false |
-| `updated_at` | `LocalDateTime` | `@LastModifiedDate`, not null |
+- `Role` enum에 `ROLE_REVIEWER`, `ROLE_APPROVER`를 추가한다.
+- `Task` 엔티티와 Task DTO에 `TaskStatus status`를 추가한다. 생성 요청에서 status가 없으면 `STARTED`를 기본값으로 둔다.
+- `TaskReport` 엔티티를 추가한다: `task`, `author`, `reviewer`, `approver`, `content`, `status`, `createdAt`, `updatedAt`.
+- 보고서는 태스크당 1개만 생성되도록 `task_id` unique 제약을 둔다.
+- `UserRepository`에 역할별 사용자 조회 기능을 추가하고, 관리자 전용 검토자/결재자 관리 API를 만든다.
+- `NotAuthorizedException`을 403으로 응답하도록 `GlobalExceptionHandler`에 핸들러를 추가한다.
 
-- `@EntityListeners(AuditingEntityListener.class)` (기존 `JpaAuditingConfig` 재사용)
-- Lombok `@Data @Builder @NoArgsConstructor @AllArgsConstructor`
+## Public API
 
-### 3.2 `Task` (`tasks` 테이블)
-| 컬럼 | 타입 | 제약 |
-|---|---|---|
-| `id` | `Long` | PK |
-| `device` | `Device` | `@ManyToOne(FetchType.LAZY)`, `@JoinColumn(name = "device_id", nullable = false)` |
-| `name` | `String` | `@Column(length = 255, nullable = false)` |
-| `description` | `String` | `@Column(length = 1000)` |
-| `created_at` / `updated_at` | `LocalDateTime` | Auditing |
+- Task API
+  - 기존 `/api/v2/tasks` 요청/응답에 `status` 필드를 추가한다.
+- Report API
+  - `POST /api/v2/reports`: 완료된 태스크의 보고서 작성, 작성자는 현재 로그인 사용자.
+  - `GET /api/v2/reports`: 모든 보고서 목록 조회.
+  - `GET /api/v2/reports/{id}`: 보고서 단건 조회.
+  - `PUT /api/v2/reports/{id}`: 작성자만 `DRAFT` 또는 `SUBMITTED` 상태에서 본문 수정.
+  - `DELETE /api/v2/reports/{id}`: 작성자만 `DRAFT` 상태에서 삭제.
+  - `POST /api/v2/reports/{id}/submit`: 작성자만 실행, reviewerId/approverId 선택, `DRAFT -> SUBMITTED`.
+  - `POST /api/v2/reports/{id}/cancel`: 작성자만 실행, `DRAFT` 또는 `SUBMITTED -> DRAFT`, reviewer/approver 선택값 초기화.
+  - `POST /api/v2/reports/{id}/start-review`: 지정 검토자만 실행, `SUBMITTED -> REVIEW`.
+  - `POST /api/v2/reports/{id}/reject-review`: 지정 검토자만 실행, `REVIEW -> SUBMITTED`.
+  - `POST /api/v2/reports/{id}/complete-review`: 지정 검토자만 실행, `REVIEW -> APPROVAL`.
+  - `POST /api/v2/reports/{id}/reject-approval`: 지정 결재자만 실행, `APPROVAL -> REVIEW`.
+  - `POST /api/v2/reports/{id}/approve`: 지정 결재자만 실행, `APPROVAL -> APPROVED`.
+- Reviewer/Approver API
+  - `GET /api/v2/reviewers`, `GET /api/v2/approvers`: 역할별 사용자 목록 조회.
+  - `POST /api/v2/reviewers`, `POST /api/v2/approvers`: 관리자만 신규 사용자 생성 후 역할 부여.
+  - `POST /api/v2/reviewers/{userId}`, `POST /api/v2/approvers/{userId}`: 관리자만 기존 사용자에 역할 추가.
+  - `PUT /api/v2/reviewers/{userId}`, `PUT /api/v2/approvers/{userId}`: 관리자만 사용자 정보 수정.
+  - `DELETE /api/v2/reviewers/{userId}`, `DELETE /api/v2/approvers/{userId}`: 관리자만 해당 역할 회수.
 
-> 요구사항의 "name ≤ 255자", "description ≤ 1000자" 는 DDL 길이 제약 + DTO `@Size` 검증으로 이중 적용.
+## Test Plan
 
-## 4. DTO 설계
+- `TaskServiceTest`, `TaskControllerTest`: Task status 기본값, 생성/수정/응답 JSON 검증.
+- `TaskReportServiceTest`: 완료 태스크만 보고서 생성, 중복 보고서 방지, 작성자 권한, 삭제 가능 상태, 전체 상태 전이, 잘못된 전이 400, 권한 없는 사용자 403 검증.
+- `TaskReportControllerTest`: 보고서 CRUD와 액션 API의 HTTP status 및 응답 JSON 검증.
+- 검토자/결재자 관리 테스트: 관리자만 생성/추가/수정/삭제 가능, 역할별 목록 조회 검증.
+- 전체 검증 명령은 `./gradlew test`로 수행한다.
 
-### 4.1 Device
-- `DeviceRequestDto`: `name`, `type`
-- `DeviceResponseDto`: `id`, `name`, `type`, `createdAt`, `updatedAt`
-- `DeviceWithTasksResponseDto`: `id`, `name`, `type`, `createdAt`, `updatedAt`, `tasks: List<TaskSummaryDto>`
-  - `TaskSummaryDto`: `id`, `name`, `description` (device 정보 제외 — 부모와 중복 방지)
+## Assumptions
 
-### 4.2 Task
-- `TaskRequestDto`: `deviceId`, `name` (`@Size(max=255)`), `description` (`@Size(max=1000)`)
-- `TaskResponseDto`: `id`, `deviceId`, `name`, `description`, `createdAt`, `updatedAt`
-- `TaskWithDeviceResponseDto`: `id`, `name`, `description`, `createdAt`, `updatedAt`, `device: DeviceSummaryDto`
-  - `DeviceSummaryDto`: `id`, `name`, `type`
-
-> 결합 응답 DTO를 별도로 두는 이유: 단순 CRUD 응답을 가볍게 유지하고, 결합 API에서만 N+1 회피용 fetch join + 명시적 매핑을 쓰기 위함.
-
-## 5. Repository
-
-### 5.1 `DeviceRepository extends JpaRepository<Device, Long>`
-- 기본 CRUD 메서드 사용.
-- 결합 API용:
-  ```java
-  @Query(value = "SELECT DISTINCT d FROM Device d LEFT JOIN FETCH d.tasks",
-         countQuery = "SELECT COUNT(d) FROM Device d")
-  Page<Device> findAllWithTasks(Pageable pageable);
-  ```
-  - `Device`에 `@OneToMany(mappedBy = "device") List<Task> tasks` 양방향 매핑 추가 (LAZY).
-  - fetch join + pageable 사용 시 `HHH000104` 경고가 발생하므로, 대안으로 **두 단계 쿼리**(① `Page<Device>` 조회 → ② `findAllByDeviceIdIn(ids)`로 tasks 일괄 로딩 → 메모리에서 그룹핑) 패턴을 채택할 수 있음. 구현 시 후자를 우선 채택하여 메모리 페이징 경고 회피.
-
-### 5.2 `TaskRepository extends JpaRepository<Task, Long>`
-- 기본 CRUD.
-- 결합 API용:
-  ```java
-  @Query(value = "SELECT t FROM Task t JOIN FETCH t.device",
-         countQuery = "SELECT COUNT(t) FROM Task t")
-  Page<Task> findAllWithDevice(Pageable pageable);
-  ```
-  - `@ManyToOne`은 단일 연관관계라 fetch join + paging이 안전 (컬렉션 X).
-
-## 6. Service
-
-### 6.1 `DeviceService`
-- `createDevice(DeviceRequestDto)` → `DeviceResponseDto`
-- `getDevice(Long id)` → `DeviceResponseDto`
-- `updateDevice(Long id, DeviceRequestDto)` → `DeviceResponseDto`
-- `deleteDevice(Long id)` → void
-- `getDevices(Pageable)` → `Page<DeviceResponseDto>`
-- `getDevicesWithTasks(Pageable)` → `Page<DeviceWithTasksResponseDto>`
-  - 위 "두 단계 쿼리" 전략 채택 시 여기서 조합.
-
-### 6.2 `TaskService`
-- `createTask(TaskRequestDto)`: `deviceId` 존재 검증 → 저장
-- `getTask(Long id)`
-- `updateTask(Long id, TaskRequestDto)`: deviceId 변경 시 새 Device 검증
-- `deleteTask(Long id)`
-- `getTasks(Pageable)` → `Page<TaskResponseDto>`
-- `getTasksWithDevice(Pageable)` → `Page<TaskWithDeviceResponseDto>` (fetch join + Page.map)
-
-- 트랜잭션: 기존 `ArticleService`와 동일하게 클래스에 `@Transactional(isolation = REPEATABLE_READ)`, 조회는 `@Transactional(readOnly = true)`.
-
-## 7. Controller
-
-공통: `@RestController`, springdoc `@Operation`/`@ApiResponses`. 인증 요구사항이 명시되지 않았으므로 `SecurityConfig`에서 `/api/v2/devices/**`, `/api/v2/tasks/**` 를 `permitAll`로 등록 (또는 인증 요구를 확인 후 결정 — 6.4 참조).
-
-### 7.1 `DeviceController` (`/api/v2/devices`)
-| Method | Path | 설명 |
-|---|---|---|
-| POST | `/` | 생성 |
-| GET | `/{id}` | 단건 조회 |
-| PUT | `/{id}` | 수정 |
-| DELETE | `/{id}` | 삭제 (204) |
-| GET | `/` | 목록 (Pageable) |
-| GET | `/with-tasks` | `getDevicesWithTasks` — Pageable |
-
-### 7.2 `TaskController` (`/api/v2/tasks`)
-| Method | Path | 설명 |
-|---|---|---|
-| POST | `/` | 생성 |
-| GET | `/{id}` | 단건 조회 |
-| PUT | `/{id}` | 수정 |
-| DELETE | `/{id}` | 삭제 |
-| GET | `/` | 목록 (Pageable) |
-| GET | `/with-device` | `getTasksWithDevice` — Pageable |
-
-- Pageable 파라미터는 Spring의 `@PageableDefault(size = 20)` + `?page=&size=&sort=` 쿼리스트링.
-- 응답은 `Page<...>` 그대로 직렬화 (기존 프로젝트에 PageResponse 래퍼가 없어 표준 직렬화 사용; 필요 시 추후 래퍼 도입).
-
-## 8. 예외 처리
-- `DeviceNotFoundException`, `TaskNotFoundException` (`RuntimeException` 상속).
-- `GlobalExceptionHandler`에 핸들러 추가 — 기존 `ArticleNotFoundException` 핸들러와 동일하게 `404 + message`.
-- DTO 검증 실패 (`@Valid` + `@Size`) → 400. 컨트롤러 인자에 `@Valid` 추가.
-
-## 9. 매퍼 (`EntityDtoMapper`)
-- `toDto(Device)`, `toDto(Task)`, `toWithTasksDto(Device, List<Task>)`, `toWithDeviceDto(Task)` 추가.
-- 정적 메서드 유지 (기존 패턴).
-
-## 10. Security 설정
-- 현재 `SecurityConfig`가 JWT 기반인지 확인 후, 인증 비요구 시 두 경로를 `permitAll` 등록. 인증 요구이면 컨트롤러 테스트에서 `@WithMockUser` 또는 `csrf()`만 적용.
-- 작업 시작 전 1차로 `SecurityConfig` 실제 정책 확인이 필요 — 정책에 따라 테스트의 `csrf()`/인증 모킹 처리 결정.
-
-## 11. 데이터베이스 / 마이그레이션
-- `spring.jpa.hibernate.ddl-auto=update` 상태이므로 엔티티 추가 시 자동 생성됨.
-- 명시적 DDL은 `src/main/resources/ddl/ddl_Device.sql`, `ddl_Task.sql` 로 참고용 저장 (기존 `ddl_Article.sql` 패턴).
-
-## 12. 테스트 전략
-
-### 12.1 컨트롤러 (`@WebMvcTest`)
-- `DeviceControllerTest`, `TaskControllerTest`: 기존 `ArticleControllerTest` 구조 그대로.
-  - `@MockitoBean` 으로 Service, `JwtUtil`, `JpaMetamodelMappingContext` 주입.
-  - CRUD 5종 + 결합 API(`/with-tasks`, `/with-device`) Paging 응답 (`$.content[0]...`, `$.totalElements`).
-  - NotFound 시나리오 1개씩.
-
-### 12.2 서비스 단위 (`@ExtendWith(MockitoExtension)`)
-- `DeviceServiceTest`, `TaskServiceTest`: Repository를 mock, 생성/조회/수정/삭제 + NotFound 분기.
-
-### 12.3 (선택) 통합 테스트
-- Testcontainers MySQL 의존성이 이미 존재 → 시간 여유 시 `@SpringBootTest` 한 케이스로 `getDevicesWithTasks` 페이징/정렬 동작 검증. 1차 범위에서는 생략하고 단위 테스트로 충분히 커버.
-
-## 13. 작업 순서 (구현 step)
-1. `SecurityConfig` 정책 확인 → 새 경로 처리 방침 확정.
-2. 엔티티 `Device`, `Task` + 양방향 매핑 추가.
-3. Request/Response/With-Join DTO 추가.
-4. `DeviceRepository`, `TaskRepository` (paging 쿼리 포함).
-5. 예외 + `GlobalExceptionHandler` 핸들러 추가.
-6. `EntityDtoMapper` 매퍼 확장.
-7. `DeviceService`, `TaskService` 구현.
-8. `DeviceController`, `TaskController` 구현 (springdoc 어노테이션 포함).
-9. 컨트롤러/서비스 테스트 작성.
-10. `./gradlew spotlessApply test` 로 포맷·테스트 검증.
-
-## 14. 미정/확인 필요 사항
-- (A) `Devices`, `Tasks` 의 인증 요구 여부 — 요구사항 명시 없음. 기본은 `permitAll`로 진행 예정. 변경 필요 시 사전 합의.
-- (B) "결합 API"의 결합 방식 — `getDevicesWithTasks` 는 "Device + 그에 속한 Task 리스트", `getTasksWithDevice`는 "Task + 소속 Device" 로 해석함. 다른 의미였다면 알려주면 반영.
-- (C) Pageable 기본 size (20) 와 정렬 키 (기본 `id ASC`) — 합의 가능 시 조정.
+- 검토자/결재자는 기존 `users` 계정에 역할을 추가하는 방식으로 구현한다.
+- 검토자/결재자 관리 변경 API는 `ROLE_ADMIN`만 사용할 수 있다.
+- 보고서 생성은 `COMPLETED` 상태 태스크에만 허용한다.
+- `작성 취소`는 DB에 별도 상태로 저장하지 않고 보고서를 `DRAFT`로 되돌리는 액션이다.
+- 기존 DDL은 참고용이고, 현재 설정의 `spring.jpa.hibernate.ddl-auto=update`를 유지한다. 필요하면 `src/main/resources/ddl`에 보고서/태스크 상태 DDL 문서를 추가한다.

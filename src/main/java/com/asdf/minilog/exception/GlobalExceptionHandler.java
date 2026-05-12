@@ -60,6 +60,28 @@ public class GlobalExceptionHandler {
 
   @ApiResponses(
       value = {
+        @ApiResponse(responseCode = "404", description = "Task report not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  @ExceptionHandler(TaskReportNotFoundException.class)
+  public ResponseEntity<String> handleTaskReportNotFoundException(
+      TaskReportNotFoundException exception) {
+    return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+  }
+
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  @ExceptionHandler(NotAuthorizedException.class)
+  public ResponseEntity<String> handleNotAuthorizedException(NotAuthorizedException exception) {
+    return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
+  }
+
+  @ApiResponses(
+      value = {
         @ApiResponse(responseCode = "400", description = "Bad request"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
       })

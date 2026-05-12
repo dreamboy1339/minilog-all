@@ -1,5 +1,6 @@
 package com.asdf.minilog.dto;
 
+import com.asdf.minilog.entity.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,4 +18,6 @@ public class TaskSummaryDto {
   @NonNull private String name;
 
   private String description;
+
+  private TaskStatus status;
 }

@@ -5,6 +5,7 @@ import com.asdf.minilog.dto.DeviceResponseDto;
 import com.asdf.minilog.dto.DeviceSummaryDto;
 import com.asdf.minilog.dto.DeviceWithTasksResponseDto;
 import com.asdf.minilog.dto.FollowResponseDto;
+import com.asdf.minilog.dto.TaskReportResponseDto;
 import com.asdf.minilog.dto.TaskResponseDto;
 import com.asdf.minilog.dto.TaskSummaryDto;
 import com.asdf.minilog.dto.TaskWithDeviceResponseDto;
@@ -13,6 +14,7 @@ import com.asdf.minilog.entity.Article;
 import com.asdf.minilog.entity.Device;
 import com.asdf.minilog.entity.Follow;
 import com.asdf.minilog.entity.Task;
+import com.asdf.minilog.entity.TaskReport;
 import com.asdf.minilog.entity.User;
 import java.util.List;
 
@@ -36,7 +38,11 @@ public class EntityDtoMapper {
   }
 
   public static UserResponseDto toDto(User user) {
-    return UserResponseDto.builder().id(user.getId()).username(user.getUserName()).build();
+    return UserResponseDto.builder()
+        .id(user.getId())
+        .username(user.getUserName())
+        .roles(user.getRoles())
+        .build();
   }
 
   public static Follow toEntity(Long followerId, Long followeeId) {
@@ -70,6 +76,7 @@ public class EntityDtoMapper {
         .deviceId(task.getDevice().getId())
         .name(task.getName())
         .description(task.getDescription())
+        .status(task.getStatus())
         .createdAt(task.getCreatedAt())
         .updatedAt(task.getUpdatedAt())
         .build();
@@ -80,6 +87,7 @@ public class EntityDtoMapper {
         .id(task.getId())
         .name(task.getName())
         .description(task.getDescription())
+        .status(task.getStatus())
         .build();
   }
 
@@ -99,9 +107,27 @@ public class EntityDtoMapper {
         .id(task.getId())
         .name(task.getName())
         .description(task.getDescription())
+        .status(task.getStatus())
         .createdAt(task.getCreatedAt())
         .updatedAt(task.getUpdatedAt())
         .device(toSummaryDto(task.getDevice()))
+        .build();
+  }
+
+  public static TaskReportResponseDto toDto(TaskReport report) {
+    return TaskReportResponseDto.builder()
+        .id(report.getId())
+        .taskId(report.getTask().getId())
+        .authorId(report.getAuthor().getId())
+        .authorName(report.getAuthor().getUserName())
+        .reviewerId(report.getReviewer() == null ? null : report.getReviewer().getId())
+        .reviewerName(report.getReviewer() == null ? null : report.getReviewer().getUserName())
+        .approverId(report.getApprover() == null ? null : report.getApprover().getId())
+        .approverName(report.getApprover() == null ? null : report.getApprover().getUserName())
+        .content(report.getContent())
+        .status(report.getStatus())
+        .createdAt(report.getCreatedAt())
+        .updatedAt(report.getUpdatedAt())
         .build();
   }
 }

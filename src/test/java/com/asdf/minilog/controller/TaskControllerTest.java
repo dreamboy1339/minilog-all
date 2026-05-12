@@ -16,6 +16,7 @@ import com.asdf.minilog.dto.DeviceSummaryDto;
 import com.asdf.minilog.dto.TaskRequestDto;
 import com.asdf.minilog.dto.TaskResponseDto;
 import com.asdf.minilog.dto.TaskWithDeviceResponseDto;
+import com.asdf.minilog.entity.TaskStatus;
 import com.asdf.minilog.exception.TaskNotFoundException;
 import com.asdf.minilog.security.MinilogUserDetails;
 import com.asdf.minilog.service.TaskService;
@@ -77,6 +78,7 @@ public class TaskControllerTest {
         .deviceId(1L)
         .name("task-a")
         .description("first task")
+        .status(TaskStatus.STARTED)
         .createdAt(fixtureDateTime)
         .updatedAt(fixtureDateTime)
         .build();
@@ -99,6 +101,7 @@ public class TaskControllerTest {
         .andExpect(jsonPath("$.deviceId").value(1L))
         .andExpect(jsonPath("$.name").value("task-a"))
         .andExpect(jsonPath("$.description").value("first task"))
+        .andExpect(jsonPath("$.status").value("STARTED"))
         .andExpect(jsonPath("$.createdAt").value(formattedFixtureDateTime))
         .andExpect(jsonPath("$.updatedAt").value(formattedFixtureDateTime));
   }
@@ -112,7 +115,8 @@ public class TaskControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(10L))
         .andExpect(jsonPath("$.deviceId").value(1L))
-        .andExpect(jsonPath("$.name").value("task-a"));
+        .andExpect(jsonPath("$.name").value("task-a"))
+        .andExpect(jsonPath("$.status").value("STARTED"));
   }
 
   @Test
@@ -129,6 +133,7 @@ public class TaskControllerTest {
             .deviceId(1L)
             .name("task-updated")
             .description("desc-updated")
+            .status(TaskStatus.COMPLETED)
             .createdAt(fixtureDateTime)
             .updatedAt(fixtureDateTime)
             .build();
@@ -143,7 +148,8 @@ public class TaskControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(10L))
         .andExpect(jsonPath("$.name").value("task-updated"))
-        .andExpect(jsonPath("$.description").value("desc-updated"));
+        .andExpect(jsonPath("$.description").value("desc-updated"))
+        .andExpect(jsonPath("$.status").value("COMPLETED"));
   }
 
   @Test
@@ -172,6 +178,7 @@ public class TaskControllerTest {
             .id(10L)
             .name("task-a")
             .description("first task")
+            .status(TaskStatus.STARTED)
             .createdAt(fixtureDateTime)
             .updatedAt(fixtureDateTime)
             .device(DeviceSummaryDto.builder().id(1L).name("device-1").type("sensor").build())
