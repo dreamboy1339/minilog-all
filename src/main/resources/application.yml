@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: minilog-all
+  datasource:
+    url: jdbc:mysql://localhost:3307/minilog_all_db
+    username: minilog_all_user
+    password: dev_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  secret: byTIXCO+3tgAnSveY9fRR+2M9FiuGfaCRo5Q1TiTm5U=
