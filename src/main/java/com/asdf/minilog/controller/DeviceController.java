@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -118,7 +119,7 @@ public class DeviceController {
   @Operation(summary = "Get devices (paged)")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
   public ResponseEntity<Page<DeviceResponseDto>> getDevices(
-      @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+      @ParameterObject @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
     return ResponseEntity.ok(deviceService.getDevices(pageable));
   }
 
@@ -132,7 +133,7 @@ public class DeviceController {
   @Operation(summary = "Get devices with their tasks (paged)")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
   public ResponseEntity<Page<DeviceWithTasksResponseDto>> getDevicesWithTasks(
-      @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+      @ParameterObject @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
     return ResponseEntity.ok(deviceService.getDevicesWithTasks(pageable));
   }
 }
