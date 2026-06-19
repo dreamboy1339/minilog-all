@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 /**
  * JWT 토큰 생성/파싱/검증 유틸리티.
  *
- * <p>HS256 알고리즘과 Base64로 인코딩된 비밀키({@code jwt.secret})를 사용하여 토큰을 서명/검증한다. 토큰에는 사용자명(subject)과
- * userId 클레임이 담기며, 만료 시간은 {@link #JWT_VALIDITY}(초)로 결정된다.
+ * <p>HS256 알고리즘과 Base64로 인코딩된 비밀키({@code jwt.secret})를 사용하여 토큰을 서명/검증한다. 토큰에는 사용자명(subject)과 userId
+ * 클레임이 담기며, 만료 시간은 {@link #JWT_VALIDITY}(초)로 결정된다.
  */
 @Component
 public class JwtUtil implements Serializable {

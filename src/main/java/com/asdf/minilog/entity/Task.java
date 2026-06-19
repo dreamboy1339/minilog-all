@@ -25,8 +25,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 /**
  * 장비({@link Device})에서 수행되는 작업을 나타내는 엔티티. {@code tasks} 테이블에 매핑된다.
  *
- * <p>하나의 Task는 하나의 Device에 속한다(N:1). 진행 상태는 {@link TaskStatus}로 관리되며, 생성/수정 시각은 JPA Auditing으로
- * 자동 관리된다.
+ * <p>하나의 Task는 하나의 Device에 속한다(N:1). 진행 상태는 {@link TaskStatus}로 관리되며, 생성/수정 시각은 JPA Auditing으로 자동
+ * 관리된다.
  */
 @Entity
 @Table(name = "tasks")

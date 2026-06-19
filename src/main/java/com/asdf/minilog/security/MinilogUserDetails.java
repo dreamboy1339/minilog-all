@@ -10,8 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 /**
  * Spring Security 인증에 사용되는 사용자 정보 구현체.
  *
- * <p>사용자 ID/이름/비밀번호와 권한 목록을 담아 {@link UserDetails} 계약을 충족한다. Lombok {@code @Data}가 getter
- * 등을 생성한다.
+ * <p>사용자 ID/이름/비밀번호와 권한 목록을 담아 {@link UserDetails} 계약을 충족한다. Lombok {@code @Data}가 getter 등을 생성한다.
  */
 @AllArgsConstructor
 @NoArgsConstructor

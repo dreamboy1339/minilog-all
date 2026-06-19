@@ -38,8 +38,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 /**
  * Spring Security 설정 클래스.
  *
- * <p>JWT 기반 STATELESS 인증을 위한 보안 필터 체인, 비밀번호 인코더, AuthenticationManager 빈을 구성한다. URL별 접근 권한과
- * 메서드 수준 보안({@code @PreAuthorize} 등)도 함께 활성화한다.
+ * <p>JWT 기반 STATELESS 인증을 위한 보안 필터 체인, 비밀번호 인코더, AuthenticationManager 빈을 구성한다. URL별 접근 권한과 메서드 수준
+ * 보안({@code @PreAuthorize} 등)도 함께 활성화한다.
  */
 // 이 클래스가 스프링 설정 클래스임을 선언
 @Configuration

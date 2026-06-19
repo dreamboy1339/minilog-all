@@ -26,8 +26,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 /**
  * 작업({@link Task})에 대한 보고서를 나타내는 엔티티. {@code task_reports} 테이블에 매핑된다.
  *
- * <p>하나의 Task당 하나의 보고서를 가진다(1:1). 작성자/검토자/승인자는 각각 {@link User}를 참조하며(N:1, 검토자와 승인자는
- * 선택적), 결재 진행 상태는 {@link ReportStatus}로 관리된다. 생성/수정 시각은 JPA Auditing으로 자동 관리된다.
+ * <p>하나의 Task당 하나의 보고서를 가진다(1:1). 작성자/검토자/승인자는 각각 {@link User}를 참조하며(N:1, 검토자와 승인자는 선택적), 결재 진행 상태는
+ * {@link ReportStatus}로 관리된다. 생성/수정 시각은 JPA Auditing으로 자동 관리된다.
  */
 @Entity
 @Table(name = "task_reports")

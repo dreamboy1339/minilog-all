@@ -30,8 +30,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 /**
  * 서비스 사용자를 나타내는 엔티티. {@code users} 테이블에 매핑된다.
  *
- * <p>여러 권한({@link Role})과 여러 게시글({@link Article})을 가진다(1:N). 비밀번호는 저장 시 BCrypt로 암호화되며, 생성/수정
- * 시각은 JPA Auditing으로 자동 관리된다.
+ * <p>여러 권한({@link Role})과 여러 게시글({@link Article})을 가진다(1:N). 비밀번호는 저장 시 BCrypt로 암호화되며, 생성/수정 시각은
+ * JPA Auditing으로 자동 관리된다.
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
