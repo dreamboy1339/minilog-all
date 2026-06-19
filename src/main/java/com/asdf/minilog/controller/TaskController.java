@@ -23,6 +23,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 작업(Task) 관리 REST 컨트롤러.
+ *
+ * <p>{@code /api/v2/tasks} 경로에서 작업의 생성, 단건 조회, 수정, 삭제와 페이징 목록 조회를 제공한다. 작업이 속한 장비까지 함께 조회하는 엔드포인트도
+ * 포함한다.
+ */
 @RestController
 @RequestMapping("/api/v2/tasks")
 public class TaskController {
@@ -34,6 +40,12 @@ public class TaskController {
     this.taskService = taskService;
   }
 
+  /**
+   * 새 작업을 생성한다. (POST /api/v2/tasks)
+   *
+   * @param request 생성할 작업 정보(연결할 장비 포함)
+   * @return 생성된 작업 정보
+   */
   @PostMapping
   @Operation(summary = "Create a new task")
   @ApiResponses({
@@ -45,6 +57,12 @@ public class TaskController {
     return ResponseEntity.ok(taskService.createTask(request));
   }
 
+  /**
+   * 작업 ID로 단건 작업을 조회한다. (GET /api/v2/tasks/{id})
+   *
+   * @param id 조회할 작업 ID
+   * @return 작업 정보
+   */
   @GetMapping("/{id}")
   @Operation(summary = "Get task by id")
   @ApiResponses({
@@ -55,6 +73,13 @@ public class TaskController {
     return ResponseEntity.ok(taskService.getTask(id));
   }
 
+  /**
+   * 작업 정보를 수정한다. (PUT /api/v2/tasks/{id})
+   *
+   * @param id 수정할 작업 ID
+   * @param request 수정할 작업 정보
+   * @return 수정된 작업 정보
+   */
   @PutMapping("/{id}")
   @Operation(summary = "Update task")
   @ApiResponses({
@@ -66,6 +91,12 @@ public class TaskController {
     return ResponseEntity.ok(taskService.updateTask(id, request));
   }
 
+  /**
+   * 작업을 삭제한다. (DELETE /api/v2/tasks/{id})
+   *
+   * @param id 삭제할 작업 ID
+   * @return 본문 없는 204 응답
+   */
   @DeleteMapping("/{id}")
   @Operation(summary = "Delete task")
   @ApiResponses({
@@ -77,6 +108,12 @@ public class TaskController {
     return ResponseEntity.noContent().build();
   }
 
+  /**
+   * 작업 목록을 페이징하여 조회한다. (GET /api/v2/tasks)
+   *
+   * @param pageable 페이징 정보(기본 size 20, id 오름차순)
+   * @return 페이징된 작업 목록
+   */
   @GetMapping
   @Operation(summary = "Get tasks (paged)")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
@@ -85,6 +122,12 @@ public class TaskController {
     return ResponseEntity.ok(taskService.getTasks(pageable));
   }
 
+  /**
+   * 각 작업이 속한 장비(Device)까지 포함하여 페이징 조회한다. (GET /api/v2/tasks/with-device)
+   *
+   * @param pageable 페이징 정보(기본 size 20, id 오름차순)
+   * @return 장비 정보가 포함된 페이징 작업 목록
+   */
   @GetMapping("/with-device")
   @Operation(summary = "Get tasks with their device (paged)")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})

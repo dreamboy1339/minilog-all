@@ -13,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 팔로우(Follow) 관계의 비즈니스 로직을 담당하는 서비스.
+ *
+ * <p>사용자 간 팔로우/언팔로우 처리와 특정 사용자의 팔로우 목록 조회를 제공한다. 자기 자신을 팔로우하는 것은 허용하지 않는다.
+ */
 @Service
 @Transactional
 public class FollowService {
@@ -26,7 +31,17 @@ public class FollowService {
     this.userRepository = userRepository;
   }
 
+  /**
+   * 한 사용자가 다른 사용자를 팔로우한다.
+   *
+   * @param followerId 팔로우를 하는 사용자 ID
+   * @param followeeId 팔로우 대상 사용자 ID
+   * @return 생성된 팔로우 관계 정보
+   * @throws IllegalArgumentException 자기 자신을 팔로우하려는 경우
+   * @throws UserNotFoundException 팔로워 또는 팔로위 사용자를 찾을 수 없는 경우
+   */
   public FollowResponseDto follow(Long followerId, Long followeeId) {
+    // 자기 자신은 팔로우할 수 없음
     if (followerId.equals(followeeId)) {
       throw new IllegalArgumentException("You cannot follow yourself");
     }
@@ -53,6 +68,13 @@ public class FollowService {
     return EntityDtoMapper.toDto(follow);
   }
 
+  /**
+   * 팔로우 관계를 해제한다.
+   *
+   * @param followerId 언팔로우를 하는 사용자 ID
+   * @param followeeId 언팔로우 대상 사용자 ID
+   * @throws UserNotFoundException 해당 팔로우 관계가 존재하지 않는 경우
+   */
   public void unfollow(Long followerId, Long followeeId) {
     Optional<Follow> follow =
         Optional.ofNullable(
@@ -70,6 +92,13 @@ public class FollowService {
     followRepository.delete(follow.get());
   }
 
+  /**
+   * 특정 사용자가 팔로우하고 있는 대상 목록을 조회한다.
+   *
+   * @param userId 팔로워 사용자 ID
+   * @return 팔로우 관계 목록
+   * @throws UserNotFoundException 사용자를 찾을 수 없는 경우
+   */
   @Transactional(readOnly = true)
   public List<FollowResponseDto> getFollowList(Long userId) {
     if (userRepository.findById(userId).isEmpty()) {

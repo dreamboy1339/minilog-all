@@ -17,6 +17,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+/**
+ * 사용자 간 팔로우 관계를 나타내는 엔티티. {@code follows} 테이블에 매핑된다.
+ *
+ * <p>{@link User}를 양쪽으로 참조하는 자기 참조 관계이며, (follower, followee) 조합은 유니크 제약으로 중복 팔로우를 막는다.
+ */
 @Entity
 @Table(
     name = "follows",
@@ -36,10 +41,12 @@ public class Follow {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  /** 팔로우를 하는 사용자(팔로워). */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "follower_id", nullable = false)
   private User follower;
 
+  /** 팔로우를 받는 사용자(팔로위). */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "followee_id", nullable = false)
   private User followee;

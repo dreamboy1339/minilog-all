@@ -20,6 +20,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 인증(Authentication) REST 컨트롤러.
+ *
+ * <p>{@code /api/v2/auth} 경로에서 로그인 처리를 담당한다. 아이디/비밀번호를 검증한 뒤 JWT 토큰을 발급한다.
+ */
 @RestController
 @RequestMapping("/api/v2/auth")
 public class AuthenticationController {
@@ -42,6 +47,14 @@ public class AuthenticationController {
     this.userService = userService;
   }
 
+  /**
+   * 로그인을 수행하고 JWT 토큰을 발급한다. (POST /api/v2/auth/login)
+   *
+   * <p>자격 증명이 올바르지 않으면 401, 그 외 오류는 500을 반환한다.
+   *
+   * @param authRequest 로그인 아이디/비밀번호
+   * @return 성공 시 JWT 토큰, 실패 시 오류 메시지
+   */
   @PostMapping("/login")
   public ResponseEntity<?> createAuthenticationToken(
       @RequestBody AuthenticationRequestDto authRequest) {

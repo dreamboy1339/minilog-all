@@ -21,6 +21,11 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+/**
+ * 작업({@link Task})이 수행되는 장비를 나타내는 엔티티. {@code devices} 테이블에 매핑된다.
+ *
+ * <p>하나의 Device는 여러 개의 Task를 가진다(1:N). 생성/수정 시각은 JPA Auditing으로 자동 관리된다.
+ */
 @Entity
 @Table(name = "devices")
 @EntityListeners(AuditingEntityListener.class)
@@ -48,6 +53,7 @@ public class Device {
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
+  /** 이 장비에 속한 작업 목록. 장비 삭제 시 함께 삭제된다(cascade, orphanRemoval). */
   @ToString.Exclude
   @Builder.Default
   @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
