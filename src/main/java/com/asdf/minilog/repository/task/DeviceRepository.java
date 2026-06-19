@@ -1,6 +1,6 @@
-package com.asdf.minilog.repository;
+package com.asdf.minilog.repository.task;
 
-import com.asdf.minilog.entity.Device;
+import com.asdf.minilog.entity.task.Device;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

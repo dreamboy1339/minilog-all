@@ -2,11 +2,11 @@ package com.asdf.minilog.service;
 
 import com.asdf.minilog.dto.UserRequestDto;
 import com.asdf.minilog.dto.UserResponseDto;
-import com.asdf.minilog.entity.Role;
-import com.asdf.minilog.entity.User;
+import com.asdf.minilog.entity.main.Role;
+import com.asdf.minilog.entity.main.User;
 import com.asdf.minilog.exception.NotAuthorizedException;
 import com.asdf.minilog.exception.UserNotFoundException;
-import com.asdf.minilog.repository.UserRepository;
+import com.asdf.minilog.repository.main.UserRepository;
 import com.asdf.minilog.security.MinilogUserDetails;
 import com.asdf.minilog.util.EntityDtoMapper;
 import java.util.HashSet;

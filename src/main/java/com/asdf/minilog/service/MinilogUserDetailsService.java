@@ -1,7 +1,7 @@
 package com.asdf.minilog.service;
 
-import com.asdf.minilog.entity.User;
-import com.asdf.minilog.repository.UserRepository;
+import com.asdf.minilog.entity.main.User;
+import com.asdf.minilog.repository.main.UserRepository;
 import com.asdf.minilog.security.MinilogGrantedAuthority;
 import com.asdf.minilog.security.MinilogUserDetails;
 import java.util.List;

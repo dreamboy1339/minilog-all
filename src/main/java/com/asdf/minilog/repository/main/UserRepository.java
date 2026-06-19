@@ -1,7 +1,7 @@
-package com.asdf.minilog.repository;
+package com.asdf.minilog.repository.main;
 
-import com.asdf.minilog.entity.Role;
-import com.asdf.minilog.entity.User;
+import com.asdf.minilog.entity.main.Role;
+import com.asdf.minilog.entity.main.User;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

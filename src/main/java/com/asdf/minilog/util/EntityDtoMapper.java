@@ -10,12 +10,12 @@ import com.asdf.minilog.dto.TaskResponseDto;
 import com.asdf.minilog.dto.TaskSummaryDto;
 import com.asdf.minilog.dto.TaskWithDeviceResponseDto;
 import com.asdf.minilog.dto.UserResponseDto;
-import com.asdf.minilog.entity.Article;
-import com.asdf.minilog.entity.Device;
-import com.asdf.minilog.entity.Follow;
-import com.asdf.minilog.entity.Task;
-import com.asdf.minilog.entity.TaskReport;
-import com.asdf.minilog.entity.User;
+import com.asdf.minilog.entity.main.Article;
+import com.asdf.minilog.entity.main.Follow;
+import com.asdf.minilog.entity.main.TaskReport;
+import com.asdf.minilog.entity.main.User;
+import com.asdf.minilog.entity.task.Device;
+import com.asdf.minilog.entity.task.Task;
 import java.util.List;
 
 /**
@@ -137,7 +137,7 @@ public class EntityDtoMapper {
   public static TaskReportResponseDto toDto(TaskReport report) {
     return TaskReportResponseDto.builder()
         .id(report.getId())
-        .taskId(report.getTask().getId())
+        .taskId(report.getTaskId())
         .authorId(report.getAuthor().getId())
         .authorName(report.getAuthor().getUserName())
         .reviewerId(report.getReviewer() == null ? null : report.getReviewer().getId())

@@ -3,12 +3,12 @@ package com.asdf.minilog.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.asdf.minilog.dto.ArticleResponseDto;
-import com.asdf.minilog.entity.Article;
-import com.asdf.minilog.entity.Follow;
-import com.asdf.minilog.entity.User;
-import com.asdf.minilog.repository.ArticleRepository;
-import com.asdf.minilog.repository.FollowRepository;
-import com.asdf.minilog.repository.UserRepository;
+import com.asdf.minilog.entity.main.Article;
+import com.asdf.minilog.entity.main.Follow;
+import com.asdf.minilog.entity.main.User;
+import com.asdf.minilog.repository.main.ArticleRepository;
+import com.asdf.minilog.repository.main.FollowRepository;
+import com.asdf.minilog.repository.main.UserRepository;
 import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +39,10 @@ public class ArticleServiceTest {
     registry.add("spring.datasource.url", mysqlContainer::getJdbcUrl);
     registry.add("spring.datasource.username", mysqlContainer::getUsername);
     registry.add("spring.datasource.password", mysqlContainer::getPassword);
+    // 두 번째 데이터소스(task_db)도 동일한 테스트 컨테이너를 사용하도록 설정한다.
+    registry.add("task.datasource.url", mysqlContainer::getJdbcUrl);
+    registry.add("task.datasource.username", mysqlContainer::getUsername);
+    registry.add("task.datasource.password", mysqlContainer::getPassword);
   }
 
   private ArticleService articleService;

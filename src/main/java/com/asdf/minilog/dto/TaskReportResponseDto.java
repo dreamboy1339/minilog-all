@@ -1,6 +1,6 @@
 package com.asdf.minilog.dto;
 
-import com.asdf.minilog.entity.ReportStatus;
+import com.asdf.minilog.entity.main.ReportStatus;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import lombok.NonNull;
  * 작업 보고서(TaskReport) 조회 응답 본문을 담는 DTO.
  *
  * <p>서버가 보고서 상세 정보를 내려줄 때 사용하는 응답 페이로드이다. 작성자/검토자/승인자 정보와 결재 상태({@link
- * com.asdf.minilog.entity.ReportStatus})를 포함한다.
+ * com.asdf.minilog.entity.main.ReportStatus})를 포함한다.
  */
 @Data
 @Builder

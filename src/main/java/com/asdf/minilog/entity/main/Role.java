@@ -1,4 +1,4 @@
-package com.asdf.minilog.entity;
+package com.asdf.minilog.entity.main;
 
 /**
  * 사용자({@link User})의 권한을 나타내는 열거형.

@@ -1,4 +1,4 @@
-package com.asdf.minilog.entity;
+package com.asdf.minilog.entity.main;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;

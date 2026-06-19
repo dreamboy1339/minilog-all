@@ -3,13 +3,13 @@ package com.asdf.minilog.service;
 import com.asdf.minilog.dto.TaskRequestDto;
 import com.asdf.minilog.dto.TaskResponseDto;
 import com.asdf.minilog.dto.TaskWithDeviceResponseDto;
-import com.asdf.minilog.entity.Device;
-import com.asdf.minilog.entity.Task;
-import com.asdf.minilog.entity.TaskStatus;
+import com.asdf.minilog.entity.task.Device;
+import com.asdf.minilog.entity.task.Task;
+import com.asdf.minilog.entity.task.TaskStatus;
 import com.asdf.minilog.exception.DeviceNotFoundException;
 import com.asdf.minilog.exception.TaskNotFoundException;
-import com.asdf.minilog.repository.DeviceRepository;
-import com.asdf.minilog.repository.TaskRepository;
+import com.asdf.minilog.repository.task.DeviceRepository;
+import com.asdf.minilog.repository.task.TaskRepository;
 import com.asdf.minilog.util.EntityDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>작업의 생성/수정/삭제/조회 및 페이징 조회를 제공한다. 모든 작업은 특정 장비(Device)에 소속되며, 작업을 다룰 때 연결된 장비의 존재 여부를 검증한다.
  */
 @Service
-@Transactional(isolation = Isolation.REPEATABLE_READ)
+@Transactional(transactionManager = "taskTransactionManager", isolation = Isolation.REPEATABLE_READ)
 public class TaskService {
 
   private final TaskRepository taskRepository;
@@ -103,7 +103,7 @@ public class TaskService {
    * @return 작업 정보
    * @throws TaskNotFoundException 작업을 찾을 수 없는 경우
    */
-  @Transactional(readOnly = true)
+  @Transactional(transactionManager = "taskTransactionManager", readOnly = true)
   public TaskResponseDto getTask(Long id) {
     return EntityDtoMapper.toDto(findTaskOrThrow(id));
   }
@@ -114,7 +114,7 @@ public class TaskService {
    * @param pageable 페이징 정보
    * @return 페이징된 작업 목록
    */
-  @Transactional(readOnly = true)
+  @Transactional(transactionManager = "taskTransactionManager", readOnly = true)
   public Page<TaskResponseDto> getTasks(Pageable pageable) {
     return taskRepository.findAll(pageable).map(EntityDtoMapper::toDto);
   }
@@ -125,7 +125,7 @@ public class TaskService {
    * @param pageable 페이징 정보
    * @return 장비 정보가 포함된 페이징된 작업 목록
    */
-  @Transactional(readOnly = true)
+  @Transactional(transactionManager = "taskTransactionManager", readOnly = true)
   public Page<TaskWithDeviceResponseDto> getTasksWithDevice(Pageable pageable) {
     return taskRepository.findAllWithDevice(pageable).map(EntityDtoMapper::toWithDeviceDto);
   }

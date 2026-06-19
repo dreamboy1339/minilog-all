@@ -1,4 +1,4 @@
-package com.asdf.minilog.entity;
+package com.asdf.minilog.entity.main;
 
 /**
  * 작업 보고서({@link TaskReport})의 처리 상태를 나타내는 열거형.

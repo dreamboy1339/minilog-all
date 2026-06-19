@@ -12,17 +12,17 @@ import com.asdf.minilog.dto.TaskReportRequestDto;
 import com.asdf.minilog.dto.TaskReportResponseDto;
 import com.asdf.minilog.dto.TaskReportSubmitRequestDto;
 import com.asdf.minilog.dto.TaskReportUpdateRequestDto;
-import com.asdf.minilog.entity.Device;
-import com.asdf.minilog.entity.ReportStatus;
-import com.asdf.minilog.entity.Role;
-import com.asdf.minilog.entity.Task;
-import com.asdf.minilog.entity.TaskReport;
-import com.asdf.minilog.entity.TaskStatus;
-import com.asdf.minilog.entity.User;
+import com.asdf.minilog.entity.main.ReportStatus;
+import com.asdf.minilog.entity.main.Role;
+import com.asdf.minilog.entity.main.TaskReport;
+import com.asdf.minilog.entity.main.User;
+import com.asdf.minilog.entity.task.Device;
+import com.asdf.minilog.entity.task.Task;
+import com.asdf.minilog.entity.task.TaskStatus;
 import com.asdf.minilog.exception.NotAuthorizedException;
-import com.asdf.minilog.repository.TaskReportRepository;
-import com.asdf.minilog.repository.TaskRepository;
-import com.asdf.minilog.repository.UserRepository;
+import com.asdf.minilog.repository.main.TaskReportRepository;
+import com.asdf.minilog.repository.main.UserRepository;
+import com.asdf.minilog.repository.task.TaskRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
@@ -198,7 +198,7 @@ class TaskReportServiceTest {
   private TaskReport report(Long id, ReportStatus status, User author) {
     return TaskReport.builder()
         .id(id)
-        .task(task(10L, TaskStatus.COMPLETED))
+        .taskId(10L)
         .author(author)
         .content("report")
         .status(status)

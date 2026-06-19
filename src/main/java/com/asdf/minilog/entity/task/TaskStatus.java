@@ -1,4 +1,4 @@
-package com.asdf.minilog.entity;
+package com.asdf.minilog.entity.task;
 
 /**
  * 작업({@link Task})의 진행 상태를 나타내는 열거형.

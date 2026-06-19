@@ -1,11 +1,11 @@
 package com.asdf.minilog.service;
 
 import com.asdf.minilog.dto.FollowResponseDto;
-import com.asdf.minilog.entity.Follow;
-import com.asdf.minilog.entity.User;
+import com.asdf.minilog.entity.main.Follow;
+import com.asdf.minilog.entity.main.User;
 import com.asdf.minilog.exception.UserNotFoundException;
-import com.asdf.minilog.repository.FollowRepository;
-import com.asdf.minilog.repository.UserRepository;
+import com.asdf.minilog.repository.main.FollowRepository;
+import com.asdf.minilog.repository.main.UserRepository;
 import com.asdf.minilog.util.EntityDtoMapper;
 import java.util.List;
 import java.util.Optional;

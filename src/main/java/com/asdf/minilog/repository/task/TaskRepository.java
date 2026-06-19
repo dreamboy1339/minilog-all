@@ -1,6 +1,6 @@
-package com.asdf.minilog.repository;
+package com.asdf.minilog.repository.task;
 
-import com.asdf.minilog.entity.Task;
+import com.asdf.minilog.entity.task.Task;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.data.domain.Page;

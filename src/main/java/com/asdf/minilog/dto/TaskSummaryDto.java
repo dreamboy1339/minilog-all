@@ -1,6 +1,6 @@
 package com.asdf.minilog.dto;
 
-import com.asdf.minilog.entity.TaskStatus;
+import com.asdf.minilog.entity.task.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

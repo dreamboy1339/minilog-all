@@ -2,7 +2,7 @@ package com.asdf.minilog.controller;
 
 import com.asdf.minilog.dto.UserRequestDto;
 import com.asdf.minilog.dto.UserResponseDto;
-import com.asdf.minilog.entity.Role;
+import com.asdf.minilog.entity.main.Role;
 import com.asdf.minilog.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;

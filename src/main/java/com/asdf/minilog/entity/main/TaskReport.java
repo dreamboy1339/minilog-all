@@ -1,4 +1,4 @@
-package com.asdf.minilog.entity;
+package com.asdf.minilog.entity.main;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -24,10 +23,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
- * 작업({@link Task})에 대한 보고서를 나타내는 엔티티. {@code task_reports} 테이블에 매핑된다.
+ * 작업(Task)에 대한 보고서를 나타내는 엔티티. {@code task_reports} 테이블에 매핑된다.
  *
- * <p>하나의 Task당 하나의 보고서를 가진다(1:1). 작성자/검토자/승인자는 각각 {@link User}를 참조하며(N:1, 검토자와 승인자는 선택적), 결재 진행 상태는
- * {@link ReportStatus}로 관리된다. 생성/수정 시각은 JPA Auditing으로 자동 관리된다.
+ * <p>하나의 작업당 하나의 보고서를 가진다. 작업은 task_db에 있으므로 {@code taskId}로만 참조한다. 작성자/검토자/승인자는 각각 {@link User}를
+ * 참조하며(N:1, 검토자와 승인자는 선택적), 결재 진행 상태는 {@link ReportStatus}로 관리된다. 생성/수정 시각은 JPA Auditing으로 자동 관리된다.
  */
 @Entity
 @Table(name = "task_reports")
@@ -42,11 +41,9 @@ public class TaskReport {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  /** 보고 대상 작업. 작업당 하나의 보고서만 존재한다(1:1, unique). */
-  @ToString.Exclude
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "task_id", nullable = false, unique = true)
-  private Task task;
+  /** 보고 대상 작업 ID. 작업당 보고서는 하나만 존재한다(unique). 작업은 task_db에 있어 ID로만 참조한다. */
+  @Column(name = "task_id", nullable = false, unique = true)
+  private Long taskId;
 
   /** 보고서 작성자(필수). */
   @ToString.Exclude

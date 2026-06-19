@@ -1,6 +1,6 @@
 package com.asdf.minilog.security;
 
-import com.asdf.minilog.entity.Role;
+import com.asdf.minilog.entity.main.Role;
 import org.springframework.security.core.GrantedAuthority;
 
 /**

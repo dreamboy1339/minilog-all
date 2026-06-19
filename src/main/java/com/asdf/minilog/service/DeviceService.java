@@ -3,11 +3,11 @@ package com.asdf.minilog.service;
 import com.asdf.minilog.dto.DeviceRequestDto;
 import com.asdf.minilog.dto.DeviceResponseDto;
 import com.asdf.minilog.dto.DeviceWithTasksResponseDto;
-import com.asdf.minilog.entity.Device;
-import com.asdf.minilog.entity.Task;
+import com.asdf.minilog.entity.task.Device;
+import com.asdf.minilog.entity.task.Task;
 import com.asdf.minilog.exception.DeviceNotFoundException;
-import com.asdf.minilog.repository.DeviceRepository;
-import com.asdf.minilog.repository.TaskRepository;
+import com.asdf.minilog.repository.task.DeviceRepository;
+import com.asdf.minilog.repository.task.TaskRepository;
 import com.asdf.minilog.util.EntityDtoMapper;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>장비의 생성/수정/삭제/조회와 페이징 조회를 제공하며, 장비에 연결된 작업(Task) 목록을 함께 조회하는 기능도 포함한다.
  */
 @Service
-@Transactional(isolation = Isolation.REPEATABLE_READ)
+@Transactional(transactionManager = "taskTransactionManager", isolation = Isolation.REPEATABLE_READ)
 public class DeviceService {
 
   private final DeviceRepository deviceRepository;
@@ -86,7 +86,7 @@ public class DeviceService {
    * @return 장비 정보
    * @throws DeviceNotFoundException 장비를 찾을 수 없는 경우
    */
-  @Transactional(readOnly = true)
+  @Transactional(transactionManager = "taskTransactionManager", readOnly = true)
   public DeviceResponseDto getDevice(Long id) {
     return EntityDtoMapper.toDto(findDeviceOrThrow(id));
   }
@@ -97,7 +97,7 @@ public class DeviceService {
    * @param pageable 페이징 정보
    * @return 페이징된 장비 목록
    */
-  @Transactional(readOnly = true)
+  @Transactional(transactionManager = "taskTransactionManager", readOnly = true)
   public Page<DeviceResponseDto> getDevices(Pageable pageable) {
     return deviceRepository.findAll(pageable).map(EntityDtoMapper::toDto);
   }
@@ -110,7 +110,7 @@ public class DeviceService {
    * @param pageable 페이징 정보
    * @return 작업 목록이 포함된 페이징된 장비 목록
    */
-  @Transactional(readOnly = true)
+  @Transactional(transactionManager = "taskTransactionManager", readOnly = true)
   public Page<DeviceWithTasksResponseDto> getDevicesWithTasks(Pageable pageable) {
     Page<Device> devicePage = deviceRepository.findAll(pageable);
     List<Device> devices = devicePage.getContent();

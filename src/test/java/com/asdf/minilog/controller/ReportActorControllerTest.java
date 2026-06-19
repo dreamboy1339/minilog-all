@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.asdf.minilog.dto.UserRequestDto;
 import com.asdf.minilog.dto.UserResponseDto;
-import com.asdf.minilog.entity.Role;
+import com.asdf.minilog.entity.main.Role;
 import com.asdf.minilog.security.MinilogUserDetails;
 import com.asdf.minilog.service.UserService;
 import com.asdf.minilog.util.JwtUtil;

@@ -1,6 +1,6 @@
-package com.asdf.minilog.repository;
+package com.asdf.minilog.repository.main;
 
-import com.asdf.minilog.entity.Article;
+import com.asdf.minilog.entity.main.Article;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

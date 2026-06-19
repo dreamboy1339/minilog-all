@@ -1,13 +1,13 @@
 package com.asdf.minilog.service;
 
 import com.asdf.minilog.dto.ArticleResponseDto;
-import com.asdf.minilog.entity.Article;
-import com.asdf.minilog.entity.User;
+import com.asdf.minilog.entity.main.Article;
+import com.asdf.minilog.entity.main.User;
 import com.asdf.minilog.exception.ArticleNotFoundException;
 import com.asdf.minilog.exception.NotAuthorizedException;
 import com.asdf.minilog.exception.UserNotFoundException;
-import com.asdf.minilog.repository.ArticleRepository;
-import com.asdf.minilog.repository.UserRepository;
+import com.asdf.minilog.repository.main.ArticleRepository;
+import com.asdf.minilog.repository.main.UserRepository;
 import com.asdf.minilog.util.EntityDtoMapper;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
