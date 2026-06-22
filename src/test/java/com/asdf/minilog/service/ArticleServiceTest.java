@@ -43,6 +43,15 @@ public class ArticleServiceTest {
     registry.add("task.datasource.url", mysqlContainer::getJdbcUrl);
     registry.add("task.datasource.username", mysqlContainer::getUsername);
     registry.add("task.datasource.password", mysqlContainer::getPassword);
+    // 배치용 데이터소스(quake_db, crypto_db)도 동일한 테스트 컨테이너를 사용하도록 설정한다.
+    registry.add("quake.datasource.url", mysqlContainer::getJdbcUrl);
+    registry.add("quake.datasource.username", mysqlContainer::getUsername);
+    registry.add("quake.datasource.password", mysqlContainer::getPassword);
+    registry.add("crypto.datasource.url", mysqlContainer::getJdbcUrl);
+    registry.add("crypto.datasource.username", mysqlContainer::getUsername);
+    registry.add("crypto.datasource.password", mysqlContainer::getPassword);
+    // 테스트 중에는 스케줄러(외부 API 호출)를 비활성화한다.
+    registry.add("app.scheduling.enabled", () -> "false");
   }
 
   private ArticleService articleService;
