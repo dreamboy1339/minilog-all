@@ -1,4 +1,4 @@
-package com.asdf.minilog.entity;
+package com.asdf.minilog.entity.main;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

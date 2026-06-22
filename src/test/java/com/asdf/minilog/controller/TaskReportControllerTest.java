@@ -15,7 +15,7 @@ import com.asdf.minilog.dto.TaskReportRequestDto;
 import com.asdf.minilog.dto.TaskReportResponseDto;
 import com.asdf.minilog.dto.TaskReportSubmitRequestDto;
 import com.asdf.minilog.dto.TaskReportUpdateRequestDto;
-import com.asdf.minilog.entity.ReportStatus;
+import com.asdf.minilog.entity.main.ReportStatus;
 import com.asdf.minilog.exception.NotAuthorizedException;
 import com.asdf.minilog.security.MinilogUserDetails;
 import com.asdf.minilog.service.TaskReportService;

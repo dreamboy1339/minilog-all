@@ -18,6 +18,12 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * 매 요청마다 JWT를 검증하는 필터.
+ *
+ * <p>{@code Authorization: Bearer <token>} 헤더에서 JWT를 추출해 사용자명을 파싱하고, 토큰이 유효하면 인증 정보를 {@link
+ * SecurityContextHolder}에 설정한다. {@link OncePerRequestFilter}를 상속하여 요청당 한 번만 실행된다.
+ */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -27,6 +33,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
   @Autowired private JwtUtil jwtUtil;
 
+  /**
+   * 요청 헤더의 JWT를 검증하고, 유효하면 SecurityContext에 인증 정보를 등록한 뒤 다음 필터로 진행한다.
+   *
+   * @param request 현재 요청
+   * @param response 응답
+   * @param filterChain 다음 필터 체인
+   */
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

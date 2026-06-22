@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 피드(Feed) 조회 REST 컨트롤러.
+ *
+ * <p>{@code /api/v2/feed} 경로에서 특정 사용자가 팔로우하는 대상들의 게시글을 모아 피드 형태로 조회한다.
+ */
 @RestController
 @RequestMapping("/api/v2/feed")
 public class FeedController {
@@ -24,6 +29,12 @@ public class FeedController {
     this.articleService = articleService;
   }
 
+  /**
+   * 팔로워 ID 기준으로 팔로우 중인 사용자들의 게시글 피드를 조회한다. (GET /api/v2/feed?followerId=)
+   *
+   * @param followerId 피드를 조회할 팔로워(사용자) ID
+   * @return 팔로우 대상들의 게시글 목록
+   */
   @GetMapping
   @Operation(summary = "Get feeds by follower id")
   @ApiResponses({

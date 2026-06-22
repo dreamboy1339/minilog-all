@@ -16,7 +16,7 @@ import com.asdf.minilog.dto.DeviceSummaryDto;
 import com.asdf.minilog.dto.TaskRequestDto;
 import com.asdf.minilog.dto.TaskResponseDto;
 import com.asdf.minilog.dto.TaskWithDeviceResponseDto;
-import com.asdf.minilog.entity.TaskStatus;
+import com.asdf.minilog.entity.task.TaskStatus;
 import com.asdf.minilog.exception.TaskNotFoundException;
 import com.asdf.minilog.security.MinilogUserDetails;
 import com.asdf.minilog.service.TaskService;

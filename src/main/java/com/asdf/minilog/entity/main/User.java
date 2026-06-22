@@ -1,4 +1,4 @@
-package com.asdf.minilog.entity;
+package com.asdf.minilog.entity.main;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -27,6 +27,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * 서비스 사용자를 나타내는 엔티티. {@code users} 테이블에 매핑된다.
+ *
+ * <p>여러 권한({@link Role})과 여러 게시글({@link Article})을 가진다(1:N). 비밀번호는 저장 시 BCrypt로 암호화되며, 생성/수정 시각은
+ * JPA Auditing으로 자동 관리된다.
+ */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
@@ -35,15 +41,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor
 public class User {
 
+  /** 비밀번호 암호화에 사용하는 BCrypt 인코더. */
   private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  /** 로그인 ID. {@code username} 컬럼에 매핑되며 유니크하다. */
   @Column(nullable = false, unique = true, name = "username")
   private String userName;
 
+  /** BCrypt로 암호화되어 저장되는 비밀번호. */
   @Column(nullable = false)
   private String password;
 
@@ -55,12 +64,14 @@ public class User {
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
+  /** 사용자가 가진 권한 목록. 별도의 {@code user_roles} 테이블에 저장된다. */
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
   @Enumerated(EnumType.STRING)
   @Column(name = "role")
   private Set<Role> roles;
 
+  /** 사용자가 작성한 게시글 목록. 사용자 삭제 시 함께 삭제된다(1:N, cascade, orphanRemoval). */
   @OneToMany(
       mappedBy = "author",
       cascade = CascadeType.ALL,
@@ -72,6 +83,7 @@ public class User {
     return new UserBuilder();
   }
 
+  /** 비밀번호를 BCrypt로 암호화하여 저장한다. */
   public void setPassword(String password) {
     this.password = passwordEncoder.encode(password);
   }

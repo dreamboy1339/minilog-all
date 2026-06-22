@@ -35,6 +35,12 @@ import org.springframework.security.web.SecurityFilterChain;
 // 폼 기반 로그인 인증을 처리하는 기본 필터 (JWT 필터의 삽입 위치 기준점으로 사용)
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Spring Security 설정 클래스.
+ *
+ * <p>JWT 기반 STATELESS 인증을 위한 보안 필터 체인, 비밀번호 인코더, AuthenticationManager 빈을 구성한다. URL별 접근 권한과 메서드 수준
+ * 보안({@code @PreAuthorize} 등)도 함께 활성화한다.
+ */
 // 이 클래스가 스프링 설정 클래스임을 선언
 @Configuration
 // Spring Security의 웹 보안 기능을 활성화
@@ -58,6 +64,11 @@ public class SecurityConfig {
     this.jwtRequestFilter = jwtRequestFilter;
   }
 
+  /**
+   * 비밀번호 암호화에 사용할 {@link PasswordEncoder} 빈을 등록한다.
+   *
+   * @return BCrypt 기반 인코더
+   */
   // 비밀번호 인코더를 스프링 빈으로 등록
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -65,6 +76,12 @@ public class SecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
+  /**
+   * 로그인 시 사용자 인증을 처리할 {@link AuthenticationManager} 빈을 등록한다.
+   *
+   * @param configuration 스프링이 제공하는 인증 설정
+   * @return 구성된 AuthenticationManager
+   */
   // AuthenticationManager를 스프링 빈으로 등록 (로그인 시 사용자 인증 처리에 사용)
   @Bean
   public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration configuration)
@@ -73,6 +90,14 @@ public class SecurityConfig {
     return configuration.getAuthenticationManager();
   }
 
+  /**
+   * 보안 필터 체인을 구성한다.
+   *
+   * <p>CSRF 비활성화, URL별 접근 권한, 인증 예외 처리, STATELESS 세션 정책을 설정하고 JWT 필터를 폼 로그인 필터 앞에 배치한다.
+   *
+   * @param httpSecurity HTTP 보안 빌더
+   * @return 구성된 {@link SecurityFilterChain}
+   */
   // Spring Security 필터 체인을 스프링 빈으로 등록 (HTTP 보안 설정의 핵심)
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
