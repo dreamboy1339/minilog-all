@@ -10,6 +10,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
 
 task:
   datasource:
@@ -17,6 +22,24 @@ task:
     username: minilog_all_user
     password: dev_password
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+quake:
+  datasource:
+    url: jdbc:mysql://localhost:3306/quake_db
+    username: minilog_all_user
+    password: dev_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  batch:
+    interval-ms: 600000
+
+crypto:
+  datasource:
+    url: jdbc:mysql://localhost:3306/crypto_db
+    username: minilog_all_user
+    password: dev_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  batch:
+    interval-ms: 180000
 
 jwt:
   secret: byTIXCO+3tgAnSveY9fRR+2M9FiuGfaCRo5Q1TiTm5U=

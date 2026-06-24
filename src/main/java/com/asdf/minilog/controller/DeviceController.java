@@ -119,7 +119,8 @@ public class DeviceController {
   @Operation(summary = "Get devices (paged)")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
   public ResponseEntity<Page<DeviceResponseDto>> getDevices(
-      @ParameterObject @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+      @ParameterObject @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC)
+          Pageable pageable) {
     return ResponseEntity.ok(deviceService.getDevices(pageable));
   }
 
@@ -133,7 +134,8 @@ public class DeviceController {
   @Operation(summary = "Get devices with their tasks (paged)")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "OK")})
   public ResponseEntity<Page<DeviceWithTasksResponseDto>> getDevicesWithTasks(
-      @ParameterObject @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+      @ParameterObject @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC)
+          Pageable pageable) {
     return ResponseEntity.ok(deviceService.getDevicesWithTasks(pageable));
   }
 }
