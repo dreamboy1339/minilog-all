@@ -109,7 +109,12 @@ public class SecurityConfig {
             (requests) ->
                 requests
                     // 로그인 API, Swagger UI, API 문서 경로는 인증 없이 접근 허용
-                    .requestMatchers("/api/v2/auth/login", "/swagger-ui/**", "/v3/api-docs/**")
+                    .requestMatchers(
+                        "/api/v2/auth/login",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs.yaml")
                     .permitAll()
                     // 사용자 생성, 조회는 인증 없이 가능하도록 조치.
                     // 회원가입(POST /api/v2/user)은 인증 없이 접근 허용
