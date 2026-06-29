@@ -6,6 +6,9 @@ build/
 !**/src/test/**/build/
 .claude
 
+### 첨부파일 업로드 폴더 (app.attachment.dir 기본값) ###
+/attachment/
+
 ### STS ###
 .apt_generated
 .classpath

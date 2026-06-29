@@ -80,6 +80,19 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
   }
 
+  /** {@link AttachmentNotFoundException}를 처리하여 HTTP 404 (Not Found) 응답을 반환합니다. */
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "404", description = "Attachment not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  @ExceptionHandler(AttachmentNotFoundException.class)
+  public ResponseEntity<String> handleAttachmentNotFoundException(
+      AttachmentNotFoundException exception) {
+    return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+  }
+
   /** {@link NotAuthorizedException}를 처리하여 HTTP 403 (Forbidden) 응답을 반환합니다. */
   @ApiResponses(
       value = {

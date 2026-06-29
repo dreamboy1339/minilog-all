@@ -241,3 +241,16 @@ create table minilog_all_db.user_roles
         foreign key (user_id) references minilog_all_db.users (id)
 );
 
+create table minilog_all_db.attachments
+(
+    id                 bigint auto_increment
+        primary key,
+    original_file_name varchar(255) not null,
+    stored_file_name   varchar(255) not null,
+    content_type       varchar(255) null,
+    file_size          bigint       not null,
+    data               longblob     not null,
+    created_at         datetime(6)  not null,
+    updated_at         datetime(6)  not null
+);
+
