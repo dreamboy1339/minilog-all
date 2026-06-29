@@ -120,6 +120,7 @@ com.asdf.minilog
 | `Article` | main | `content` | `@ManyToOne` author(User) |
 | `Follow` | main | (follower, followee) 유니크 제약 | `@ManyToOne` follower/followee(User) — 자기참조 |
 | `TaskReport` | main | `taskId`(unique), `content`, `status`(ReportStatus) | `@ManyToOne` author / reviewer(nullable) / approver(nullable) |
+| `Attachment` | main | `originalFileName`, `storedFileName`, `contentType`, `fileSize`, `data`(LONGBLOB) | 없음(파일 메타데이터 + 바이트) |
 | `Device` | task | `name`, `type` | `@OneToMany` tasks |
 | `Task` | task | `name`, `description`, `status`(TaskStatus) | `@ManyToOne` device |
 | `Earthquake` | quake | `magnitude`, `place`, `eventTime`, 좌표 | USGS event id를 **자연키(PK)** 로 사용 → 업서트 |
@@ -178,6 +179,8 @@ stateDiagram-v2
 | `TaskReportController` | `/api/v2/reports` | 보고서 CRUD + 워크플로우 전이 |
 | `ReviewerController` | `/api/v2/reviewers` | 검토자(ROLE_REVIEWER) 관리 |
 | `ApproverController` | `/api/v2/approvers` | 승인자(ROLE_APPROVER) 관리 |
+| `UploadFileController` | `/api/v2/files` | 파일 업로드(DB `attachments` + 서버 폴더 이중 저장) |
+| `DownloadFileController` | `/api/v2/files/download` | 파일 다운로드(DB 저장본 `/db/{id}`, 폴더 저장본 `/disk/{id}`) |
 
 ### 8.2 인증/인가 (Spring Security + JWT)
 
@@ -190,6 +193,7 @@ stateDiagram-v2
 | `POST /api/v2/auth/login`, `/swagger-ui/**`, `/v3/api-docs/**` | permitAll |
 | `POST /api/v2/user` (회원가입), `GET /api/v2/user/{userId}` | permitAll |
 | `/api/v2/devices/**`, `/api/v2/tasks/**` | permitAll |
+| `/api/v2/files/**` (업로드·다운로드) | permitAll |
 | `DELETE /api/v2/user/{userId}` | `ROLE_ADMIN` |
 | 그 외 | authenticated |
 
@@ -275,3 +279,20 @@ FLUSH PRIVILEGES;
 ```
 
 접속 정보·시크릿·배치 주기 등은 `src/main/resources/application.yml`에서 관리합니다.
+
+### 도커로 한 번에 실행 (Docker Compose) — 권장
+
+루트의 `docker-compose.yml`로 **MySQL과 애플리케이션을 한 번에** 띄울 수 있습니다. 위에서 설명한 4개 DB 생성·권한 부여는 `docker/mysql-init/01-init-databases.sql`(MySQL 최초 기동 시 1회 실행)이 자동 처리하므로 **수동 DB 생성이 필요 없습니다**.
+
+```bash
+docker compose up --build      # 빌드 + 기동 (MySQL + 앱)
+docker compose up -d           # 백그라운드 기동
+docker compose logs -f app     # 앱 로그 확인
+docker compose down            # 중지 (볼륨=데이터 보존)
+docker compose down -v         # 중지 + 볼륨 삭제 (DB·첨부파일 초기화)
+```
+
+- 앱은 `8080`, MySQL은 `3306`으로 노출됩니다(호스트에서 3306을 이미 점유 중이면 먼저 정리).
+- **데이터 영속성**: DB 데이터는 `mysql-data` 볼륨에, 업로드된 첨부파일은 `attachment-data` 볼륨(`/app/attachment`)에 보존되어 컨테이너를 재생성해도 유지됩니다. 첨부파일 저장 경로는 `app.attachment.dir`(환경변수 `APP_ATTACHMENT_DIR`)로 지정합니다.
+- 컨테이너 환경에서는 데이터소스 접속 주소가 `localhost`가 아닌 `db` 서비스여야 하므로, compose가 `SPRING_DATASOURCE_URL`·`TASK_DATASOURCE_URL`·`QUAKE_DATASOURCE_URL`·`CRYPTO_DATASOURCE_URL` 4개 환경변수로 오버라이드합니다.
+- 이미지는 멀티스테이지 `Dockerfile`(Gradle `bootJar` 빌드 → JRE 실행 이미지)로 생성됩니다.
