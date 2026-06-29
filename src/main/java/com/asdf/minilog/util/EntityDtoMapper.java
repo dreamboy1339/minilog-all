@@ -1,6 +1,7 @@
 package com.asdf.minilog.util;
 
 import com.asdf.minilog.dto.ArticleResponseDto;
+import com.asdf.minilog.dto.AttachmentResponseDto;
 import com.asdf.minilog.dto.DeviceResponseDto;
 import com.asdf.minilog.dto.DeviceSummaryDto;
 import com.asdf.minilog.dto.DeviceWithTasksResponseDto;
@@ -11,6 +12,7 @@ import com.asdf.minilog.dto.TaskSummaryDto;
 import com.asdf.minilog.dto.TaskWithDeviceResponseDto;
 import com.asdf.minilog.dto.UserResponseDto;
 import com.asdf.minilog.entity.main.Article;
+import com.asdf.minilog.entity.main.Attachment;
 import com.asdf.minilog.entity.main.Follow;
 import com.asdf.minilog.entity.main.TaskReport;
 import com.asdf.minilog.entity.main.User;
@@ -33,6 +35,17 @@ public class EntityDtoMapper {
         .authorId(article.getAuthor().getId())
         .authorName(article.getAuthor().getUserName())
         .createdAt(article.getCreatedAt())
+        .build();
+  }
+
+  /** {@link Attachment} 엔티티를 {@link AttachmentResponseDto}로 변환한다. */
+  public static AttachmentResponseDto toDto(Attachment attachment) {
+    return AttachmentResponseDto.builder()
+        .id(attachment.getId())
+        .originalFileName(attachment.getOriginalFileName())
+        .contentType(attachment.getContentType())
+        .fileSize(attachment.getFileSize())
+        .createdAt(attachment.getCreatedAt())
         .build();
   }
 

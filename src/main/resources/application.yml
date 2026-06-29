@@ -15,6 +15,10 @@ spring:
       initialize-schema: always
     job:
       enabled: false
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
 task:
   datasource:
@@ -43,3 +47,9 @@ crypto:
 
 jwt:
   secret: byTIXCO+3tgAnSveY9fRR+2M9FiuGfaCRo5Q1TiTm5U=
+
+# 첨부파일 업로드 시 서버에 파일을 저장할 폴더 경로.
+# 도커 환경에서는 이 경로에 볼륨을 마운트하고, APP_ATTACHMENT_DIR 환경변수로 재정의할 수 있다.
+app:
+  attachment:
+    dir: ${APP_ATTACHMENT_DIR:attachment}

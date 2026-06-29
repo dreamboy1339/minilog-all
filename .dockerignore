@@ -1,0 +1,9 @@
+# 이미지 빌드 컨텍스트에서 제외할 항목 (빌드 속도/이미지 크기 최적화)
+.git
+.gradle
+build
+.idea
+.junie
+.vscode
+attachment
+*.log

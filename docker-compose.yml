@@ -1,0 +1,57 @@
+# Minilog 전체 스택: MySQL + Spring 앱을 한 번에 실행한다.
+#
+#   docker compose up --build       # 빌드 + 기동 (포그라운드)
+#   docker compose up --build -d    # 백그라운드 기동
+#   docker compose logs -f app      # 앱 로그 보기
+#   docker compose down             # 중지 (볼륨=데이터는 보존)
+#   docker compose down -v          # 중지 + 볼륨 삭제 (DB·첨부파일 전부 초기화)
+#
+# DB 데이터는 mysql-data 볼륨에, 업로드된 첨부파일은 attachment-data 볼륨에 보존된다.
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: minilog-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: minilog_all_db # 메인 DB는 자동 생성된다
+      MYSQL_USER: minilog_all_user
+      MYSQL_PASSWORD: dev_password
+    ports:
+      - "3306:3306" # 호스트(MySQL Workbench 등)에서 접속이 필요할 때 사용
+    volumes:
+      - mysql-data:/var/lib/mysql # DB 데이터 보존 볼륨
+      # 나머지 3개 DB(task/quake/crypto)를 만드는 초기화 스크립트
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # DB가 실제로 접속 가능해질 때까지 기다리기 위한 헬스체크
+      test:
+        ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  app:
+    build: . # 같은 폴더의 Dockerfile 로 앱 이미지를 빌드
+    container_name: minilog-app
+    depends_on:
+      db:
+        condition: service_healthy # DB가 준비된 뒤에 앱을 시작한다
+    environment:
+      # 4개 데이터소스 접속 주소를 localhost → db(컨테이너 이름)로 변경
+      SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/minilog_all_db?useSSL=false&allowPublicKeyRetrieval=true"
+      TASK_DATASOURCE_URL: "jdbc:mysql://db:3306/task_db?useSSL=false&allowPublicKeyRetrieval=true"
+      QUAKE_DATASOURCE_URL: "jdbc:mysql://db:3306/quake_db?useSSL=false&allowPublicKeyRetrieval=true"
+      CRYPTO_DATASOURCE_URL: "jdbc:mysql://db:3306/crypto_db?useSSL=false&allowPublicKeyRetrieval=true"
+      # 첨부파일을 attachment-data 볼륨(아래 마운트)에 저장
+      APP_ATTACHMENT_DIR: /app/attachment
+    ports:
+      - "8080:8080"
+    volumes:
+      - attachment-data:/app/attachment # 첨부파일 보존 볼륨 (DB와 동일 원리)
+    restart: unless-stopped
+
+volumes:
+  mysql-data: # DB 데이터
+  attachment-data: # 업로드된 첨부파일

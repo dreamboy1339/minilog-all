@@ -121,6 +121,9 @@ public class SecurityConfig {
                     // Devices, Tasks API는 인증 없이 접근 허용 (요구사항에 인증 명시 없음)
                     .requestMatchers("/api/v2/devices/**", "/api/v2/tasks/**")
                     .permitAll()
+                    // 파일 업로드/다운로드 API는 인증 없이 접근 허용 (Swagger 등에서 테스트 편의)
+                    .requestMatchers("/api/v2/files/**")
+                    .permitAll()
                     // 사용자 삭제는 어드민 권한이 필요하도록 조치.
                     // 사용자 삭제(DELETE /api/v2/user/{userId})는 ROLE_ADMIN 권한을 가진 사용자만 접근 가능
                     .requestMatchers(HttpMethod.DELETE, "/api/v2/user/{userId}")
